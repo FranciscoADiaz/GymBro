@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 const router = Router();
 
@@ -7,7 +7,7 @@ router.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-router.get('/secure-check', authMiddleware, (_req, res) => {
+router.get('/secure-check', protect, (_req, res) => {
   res.json({ status: 'secured route ready' });
 });
 

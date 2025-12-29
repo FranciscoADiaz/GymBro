@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 const connectDB = require('./src/config/db');
 const apiRoutes = require('./src/routes/index.routes');
+const authRoutes = require('./src/routes/authRoutes');
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ if (useHelmet) {
   app.use(helmet());
 }
 
+app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 
 app.get('/', (_req, res) => {
