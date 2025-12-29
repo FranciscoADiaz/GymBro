@@ -1,5 +1,1 @@
-{"sessionId":"debug-session","runId":"run1","hypothesisId":"H2","location":"authRoutes.js:init","message":"Auth routes initialized","data":{"routes":["POST /register","POST /login"]},"timestamp":1767043914546}
-{"sessionId":"debug-session","runId":"run1","hypothesisId":"H1","location":"index.js:authRoutes","message":"Mounting auth routes","data":{"path":"/api/auth"},"timestamp":1767043914843}
-{"sessionId":"debug-session","runId":"run1","hypothesisId":"H3","location":"authController.js:register","message":"Register called","data":{"email":"francesco@outlook.com","hasPassword":true,"role":"admin"},"timestamp":1767044137024}
-{"sessionId":"debug-session","runId":"run1","hypothesisId":"H4","location":"authController.js:login","message":"Login called","data":{"email":"francesco@outlook.com","hasPassword":true},"timestamp":1767044350242}
-{"sessionId":"debug-session","runId":"run1","hypothesisId":"H4","location":"authController.js:login","message":"Login called","data":{"email":"francesco@outlook.com","hasPassword":true},"timestamp":1767044465807}
+{"sessionId":"debug-session","runId":"fe-run1","hypothesisId":"H1","location":"authService.js:register","message":"Calling register endpoint","data":{"path":"/auth/register"},"timestamp":1767046365938}
