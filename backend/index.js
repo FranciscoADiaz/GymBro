@@ -15,7 +15,10 @@ const useHelmet = process.env.USE_HELMET !== 'false';
 
 connectDB();
 
-app.use(cors());
+app.use(cors({
+  origin: '*', 
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 if (useHelmet) {
@@ -37,3 +40,5 @@ app.use((err, _req, res, _next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;
