@@ -3,6 +3,7 @@ import ProtectedRoute from './ProtectedRoute';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import Dashboard from '../pages/Dashboard';
+import MembersPage from '../pages/MembersPage';
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -23,6 +24,14 @@ const AppRouter = () => (
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/members"
+        element={
+          <ProtectedRoute>
+            <MembersPage />
           </ProtectedRoute>
         }
       />

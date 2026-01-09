@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
 
 const RegisterPage = () => {
@@ -23,65 +24,108 @@ const RegisterPage = () => {
     setLocalError(null);
     const result = await register(form);
     if (result.success) {
+      toast.success('Cuenta creada con éxito');
       navigate('/dashboard');
     } else {
       setLocalError(result.message);
+      toast.error(result.message);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h1>Crear cuenta</h1>
-        <form onSubmit={handleSubmit} className="auth-form">
-          <label htmlFor="name">Nombre</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={form.name}
-            onChange={handleChange}
-            required
-            placeholder="Nombre completo"
-          />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 space-y-6">
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-indigo-600">Registro</p>
+          <h1 className="text-2xl font-bold text-gray-900">Crear cuenta</h1>
+          <p className="text-sm text-gray-600">Completa los datos para empezar a usar el panel.</p>
+        </div>
 
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            placeholder="correo@ejemplo.com"
-          />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">
+              Nombre
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={form.name}
+              onChange={handleChange}
+              required
+              placeholder="Nombre completo"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
 
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            placeholder="********"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder="correo@ejemplo.com"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
 
-          <label htmlFor="role">Rol</label>
-          <select id="role" name="role" value={form.role} onChange={handleChange}>
-            <option value="admin">Admin</option>
-            <option value="entrenador">Entrenador</option>
-          </select>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">
+              Contraseña
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              placeholder="********"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
 
-          {(localError || error) && <p className="auth-error">{localError || error}</p>}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="role">
+              Rol
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+              <option value="admin">Admin</option>
+              <option value="entrenador">Entrenador</option>
+            </select>
+          </div>
 
-          <button type="submit" disabled={loading}>
+          {(localError || error) && (
+            <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-md px-3 py-2">
+              {localError || error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full inline-flex justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700 disabled:opacity-60 transition-colors duration-200"
+          >
             {loading ? 'Creando...' : 'Crear cuenta'}
           </button>
         </form>
 
-        <p className="auth-switch">
-          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+        <p className="text-sm text-gray-600 text-center">
+          ¿Ya tienes cuenta?{' '}
+          <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-700">
+            Inicia sesión
+          </Link>
         </p>
       </div>
     </div>

@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base theming */
+:root {
+  color: #111827;
+  background-color: #f9fafb;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+a {
+  @apply text-indigo-600 hover:text-indigo-700;
+}
+
