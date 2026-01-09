@@ -11,12 +11,12 @@ const createMember = async (req, res) => {
     const { firstName, lastName, dni, email, phone, dateOfBirth, profileImage, status, joinDate } = req.body;
 
     if (!firstName || !lastName || !dni) {
-      return res.status(400).json({ error: 'firstName, lastName and dni are required' });
+      return res.status(400).json({ error: 'firstName, lastName y dni son obligatorios' });
     }
 
     const existingDni = await Member.findOne({ dni });
     if (existingDni) {
-      return res.status(400).json({ error: 'DNI already exists' });
+      return res.status(400).json({ error: 'El DNI ya existe' });
     }
 
     const member = await Member.create({
@@ -38,7 +38,7 @@ const createMember = async (req, res) => {
       return res.status(400).json({ error: `${duplicatedField} already exists` });
     }
     console.error('Create member error:', error);
-    return res.status(500).json({ error: 'Failed to create member' });
+    return res.status(500).json({ error: 'No se pudo crear el socio' });
   }
 };
 
@@ -61,7 +61,7 @@ const getAllMembers = async (req, res) => {
     return res.status(200).json(members);
   } catch (error) {
     console.error('Get members error:', error);
-    return res.status(500).json({ error: 'Failed to fetch members' });
+    return res.status(500).json({ error: 'No se pudieron obtener los socios' });
   }
 };
 
@@ -70,12 +70,12 @@ const getMemberById = async (req, res) => {
     const { id } = req.params;
     const member = await Member.findById(id);
     if (!member) {
-      return res.status(404).json({ error: 'Member not found' });
+      return res.status(404).json({ error: 'Socio no encontrado' });
     }
     return res.status(200).json(member);
   } catch (error) {
     console.error('Get member error:', error);
-    return res.status(500).json({ error: 'Failed to fetch member' });
+    return res.status(500).json({ error: 'No se pudo obtener el socio' });
   }
 };
 
@@ -87,7 +87,7 @@ const updateMember = async (req, res) => {
     if (dni) {
       const existingDni = await Member.findOne({ dni, _id: { $ne: id } });
       if (existingDni) {
-        return res.status(400).json({ error: 'DNI already exists' });
+        return res.status(400).json({ error: 'El DNI ya existe' });
       }
     }
 
@@ -97,17 +97,17 @@ const updateMember = async (req, res) => {
     });
 
     if (!member) {
-      return res.status(404).json({ error: 'Member not found' });
+      return res.status(404).json({ error: 'Socio no encontrado' });
     }
 
     return res.status(200).json(member);
   } catch (error) {
     if (error.code === 11000) {
       const duplicatedField = Object.keys(error.keyPattern || {})[0];
-      return res.status(400).json({ error: `${duplicatedField} already exists` });
+      return res.status(400).json({ error: `${duplicatedField} ya existe` });
     }
     console.error('Update member error:', error);
-    return res.status(500).json({ error: 'Failed to update member' });
+    return res.status(500).json({ error: 'No se pudo actualizar el socio' });
   }
 };
 
@@ -116,12 +116,12 @@ const deleteMember = async (req, res) => {
     const { id } = req.params;
     const member = await Member.findByIdAndDelete(id);
     if (!member) {
-      return res.status(404).json({ error: 'Member not found' });
+      return res.status(404).json({ error: 'Socio no encontrado' });
     }
-    return res.status(200).json({ message: 'Member deleted successfully' });
+    return res.status(200).json({ message: 'Socio eliminado correctamente' });
   } catch (error) {
     console.error('Delete member error:', error);
-    return res.status(500).json({ error: 'Failed to delete member' });
+    return res.status(500).json({ error: 'No se pudo eliminar el socio' });
   }
 };
 

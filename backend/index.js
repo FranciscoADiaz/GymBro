@@ -10,12 +10,22 @@ const apiRoutes = require('./src/routes/index.routes');
 const authRoutes = require('./src/routes/authRoutes');
 const memberRoutes = require('./src/routes/memberRoutes');
 
+const validateEnv = () => {
+  const required = ['MONGODB_URI', 'JWT_SECRET'];
+  const missing = required.filter((key) => !process.env[key]);
+  if (missing.length) {
+    console.error(`Faltan variables de entorno: ${missing.join(', ')}`);
+    process.exit(1);
+  }
+};
+
 
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 const useHelmet = process.env.USE_HELMET !== 'false';
 
+validateEnv();
 connectDB();
 
 app.use(cors({
