@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema(
       enum: roles,
       default: 'admin',
     },
+    gym: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Gym',
+      required: true,
+    },
   },
   { timestamps: true }
 );

@@ -10,6 +10,7 @@ const RegisterPage = () => {
     name: '',
     email: '',
     password: '',
+    gymName: '',
     role: 'admin',
   });
   const [localError, setLocalError] = useState(null);
@@ -54,6 +55,22 @@ const RegisterPage = () => {
               onChange={handleChange}
               required
               placeholder="Nombre completo"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="gymName">
+              Gimnasio
+            </label>
+            <input
+              id="gymName"
+              name="gymName"
+              type="text"
+              value={form.gymName}
+              onChange={handleChange}
+              required
+              placeholder="Nombre del gimnasio"
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>

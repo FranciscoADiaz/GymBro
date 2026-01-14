@@ -1,13 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Gym = require('../models/Gym');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-const generateToken = (userId, role) =>
-
-  jwt.sign({ id: userId, role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+const generateToken = (userId, role, gymId) =>
+  jwt.sign({ id: userId, role, gymId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
 const sanitizeUser = (user) => {
   const obj = user.toObject();
@@ -17,10 +17,10 @@ const sanitizeUser = (user) => {
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, gymName } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Nombre, email y contraseña son obligatorios' });
+    if (!name || !email || !password || !gymName) {
+      return res.status(400).json({ error: 'Nombre, email, contraseña y nombre del gimnasio son obligatorios' });
     }
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -28,15 +28,21 @@ const register = async (req, res) => {
       return res.status(409).json({ error: 'El email ya está registrado' });
     }
 
+    const gym = await Gym.create({ name: gymName });
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
       role,
+      gym: gym._id,
     });
 
-    const token = generateToken(user._id, user.role);
+    gym.owner = user._id;
+    await gym.save();
+
+    const token = generateToken(user._id, user.role, user.gym);
     return res.status(201).json({ token, user: sanitizeUser(user) });
   } catch (error) {
     console.error('Register error:', error);
@@ -62,7 +68,7 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    const token = generateToken(user._id, user.role);
+    const token = generateToken(user._id, user.role, user.gym);
     return res.status(200).json({ token, user: sanitizeUser(user) });
   } catch (error) {
     console.error('Login error:', error);
