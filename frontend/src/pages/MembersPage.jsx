@@ -112,9 +112,20 @@ const MembersPage = () => {
   };
 
   const handleToggleStatus = async (member) => {
+    const nextStatus = member.status === 'active' ? 'inactive' : 'active';
+    const actionLabel = nextStatus === 'active' ? 'activar' : 'desactivar';
+    const result = await Swal.fire({
+      title: `¿${actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1)} socio?`,
+      text: `¿Quieres ${actionLabel} a ${member.firstName || ''} ${member.lastName || ''}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: `Sí, ${actionLabel}`,
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: nextStatus === 'active' ? '#16a34a' : '#4b5563',
+    });
+    if (!result.isConfirmed) return;
     setError(null);
     try {
-      const nextStatus = member.status === 'active' ? 'inactive' : 'active';
       const updated = await updateMember(member._id, { status: nextStatus }, token);
       setMembers((prev) => prev.map((m) => (m._id === updated._id ? updated : m)));
       if (editingMember?._id === member._id) {

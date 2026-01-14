@@ -4,3 +4,5 @@ node_modules
 .cursorules
 .cursor
 .gitignore
+.vercel
+.env*.local

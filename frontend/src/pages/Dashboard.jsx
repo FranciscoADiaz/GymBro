@@ -1,7 +1,7 @@
 import { useAuth } from '../hooks/useAuth';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -14,15 +14,6 @@ const Dashboard = () => {
               Sesión iniciada como <span className="font-semibold">{user.name || user.email}</span> ({user.role})
             </p>
           )}
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={logout}
-              className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700 transition-colors duration-200"
-            >
-              Cerrar sesión
-            </button>
-          </div>
         </div>
       </div>
     </div>

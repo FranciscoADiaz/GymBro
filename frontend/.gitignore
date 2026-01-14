@@ -6,3 +6,5 @@ dist
 .cursorules
 .cursor
 .gitignore
+.vercel
+.env*.local
