@@ -4,9 +4,11 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import Dashboard from '../pages/Dashboard';
 import MembersPage from '../pages/MembersPage';
+import Navbar from '../components/Navbar';
 
 const AppRouter = () => (
   <BrowserRouter>
+    <Navbar />
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
