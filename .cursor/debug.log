@@ -1,0 +1,3 @@
+{"location":"RegisterPage.jsx:handleSubmit","message":"register submit","data":{"formKeys":["name","email","password","gymName","role"],"hasGymName":true},"timestamp":1768424440363,"sessionId":"debug-session","runId":"reg-pre","hypothesisId":"H1"}
+{"location":"AuthContext.jsx:register","message":"register start","data":{"payloadKeys":["name","email","password","gymName","role"],"hasGymName":true},"timestamp":1768424440368,"sessionId":"debug-session","runId":"reg-pre","hypothesisId":"H2"}
+{"location":"AuthContext.jsx:register","message":"register success","data":{"hasToken":true,"hasUser":true},"timestamp":1768424441101,"sessionId":"debug-session","runId":"reg-pre","hypothesisId":"H3"}

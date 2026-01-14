@@ -19,7 +19,6 @@ const memberSchema = new mongoose.Schema(
     dni: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     email: {
@@ -53,8 +52,15 @@ const memberSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    gym: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Gym',
+      required: true,
+    },
   },
   { timestamps: true }
 );
+
+memberSchema.index({ gym: 1, dni: 1 }, { unique: true });
 
 module.exports = mongoose.model('Member', memberSchema);

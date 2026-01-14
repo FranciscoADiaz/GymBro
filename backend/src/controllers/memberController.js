@@ -9,12 +9,13 @@ const buildNameRegexFilter = (search) => {
 const createMember = async (req, res) => {
   try {
     const { firstName, lastName, dni, email, phone, dateOfBirth, profileImage, status, joinDate } = req.body;
+    const gymId = req.user?.gymId;
 
     if (!firstName || !lastName || !dni) {
       return res.status(400).json({ error: 'firstName, lastName y dni son obligatorios' });
     }
 
-    const existingDni = await Member.findOne({ dni });
+    const existingDni = await Member.findOne({ dni, gym: gymId });
     if (existingDni) {
       return res.status(400).json({ error: 'El DNI ya existe' });
     }
@@ -29,6 +30,7 @@ const createMember = async (req, res) => {
       profileImage,
       status,
       joinDate,
+      gym: gymId,
     });
 
     return res.status(201).json(member);
@@ -45,8 +47,9 @@ const createMember = async (req, res) => {
 const getAllMembers = async (req, res) => {
   try {
     const { status, search } = req.query;
+    const gymId = req.user?.gymId;
 
-    const filter = {};
+    const filter = { gym: gymId };
     if (status) {
       filter.status = status;
     }
@@ -68,7 +71,8 @@ const getAllMembers = async (req, res) => {
 const getMemberById = async (req, res) => {
   try {
     const { id } = req.params;
-    const member = await Member.findById(id);
+    const gymId = req.user?.gymId;
+    const member = await Member.findOne({ _id: id, gym: gymId });
     if (!member) {
       return res.status(404).json({ error: 'Socio no encontrado' });
     }
@@ -83,15 +87,16 @@ const updateMember = async (req, res) => {
   try {
     const { id } = req.params;
     const { dni } = req.body;
+    const gymId = req.user?.gymId;
 
     if (dni) {
-      const existingDni = await Member.findOne({ dni, _id: { $ne: id } });
+      const existingDni = await Member.findOne({ dni, _id: { $ne: id }, gym: gymId });
       if (existingDni) {
         return res.status(400).json({ error: 'El DNI ya existe' });
       }
     }
 
-    const member = await Member.findByIdAndUpdate(id, req.body, {
+    const member = await Member.findOneAndUpdate({ _id: id, gym: gymId }, req.body, {
       new: true,
       runValidators: true,
     });
@@ -114,7 +119,8 @@ const updateMember = async (req, res) => {
 const deleteMember = async (req, res) => {
   try {
     const { id } = req.params;
-    const member = await Member.findByIdAndDelete(id);
+    const gymId = req.user?.gymId;
+    const member = await Member.findOneAndDelete({ _id: id, gym: gymId });
     if (!member) {
       return res.status(404).json({ error: 'Socio no encontrado' });
     }
