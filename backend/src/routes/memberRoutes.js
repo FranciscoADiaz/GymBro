@@ -7,16 +7,16 @@ const {
   deleteMember,
 } = require('../controllers/memberController');
 const { protect } = require('../middlewares/authMiddleware');
-const { validateMember } = require('../middlewares/validators/memberValidator');
+const { validateMemberCreate, validateMemberUpdate } = require('../middlewares/validators/memberValidator');
 
 const router = Router();
 
 router.use(protect);
 
-router.post('/', validateMember, createMember);
+router.post('/', validateMemberCreate, createMember);
 router.get('/', getAllMembers);
 router.get('/:id', getMemberById);
-router.put('/:id', validateMember, updateMember);
+router.put('/:id', validateMemberUpdate, updateMember);
 router.delete('/:id', deleteMember);
 
 module.exports = router;

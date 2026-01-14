@@ -1,14 +1,21 @@
 const { body, validationResult } = require('express-validator');
 
-const memberValidationRules = [
+const createValidationRules = [
   body('firstName').notEmpty().withMessage('firstName es obligatorio'),
   body('lastName').notEmpty().withMessage('lastName es obligatorio'),
   body('dni').notEmpty().withMessage('dni es obligatorio'),
   body('email').optional().isEmail().withMessage('email no es válido'),
 ];
 
-const validateMember = [
-  ...memberValidationRules,
+const updateValidationRules = [
+  body('firstName').optional().notEmpty().withMessage('firstName es obligatorio'),
+  body('lastName').optional().notEmpty().withMessage('lastName es obligatorio'),
+  body('dni').optional().notEmpty().withMessage('dni es obligatorio'),
+  body('email').optional().isEmail().withMessage('email no es válido'),
+];
+
+const validateMemberCreate = [
+  ...createValidationRules,
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -18,5 +25,16 @@ const validateMember = [
   },
 ];
 
-module.exports = { validateMember };
+const validateMemberUpdate = [
+  ...updateValidationRules,
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.array()[0].msg });
+    }
+    return next();
+  },
+];
+
+module.exports = { validateMemberCreate, validateMemberUpdate };
 
