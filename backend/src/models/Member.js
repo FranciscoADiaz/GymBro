@@ -39,6 +39,10 @@ const memberSchema = new mongoose.Schema(
     dateOfBirth: {
       type: Date,
     },
+    activeUntil: {
+      type: Date,
+      default: null,
+    },
     profileImage: {
       type: String,
       trim: true,
@@ -46,7 +50,7 @@ const memberSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: statusEnum,
-      default: 'active',
+      default: 'inactive',
     },
     joinDate: {
       type: Date,
