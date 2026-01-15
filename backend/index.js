@@ -8,6 +8,8 @@ const connectDB = require('./src/config/db');
 
 const authRoutes = require('./src/routes/authRoutes');
 const memberRoutes = require('./src/routes/memberRoutes');
+const membershipRoutes = require('./src/routes/membershipRoutes');
+const paymentRoutes = require('./src/routes/paymentRoutes');
 
 const validateEnv = () => {
   const required = ['MONGODB_URI', 'JWT_SECRET', 'FRONTEND_URL'];
@@ -61,8 +63,10 @@ app.get('/', (_req, res) => {
 });
 
 
-app.use('/api/auth', authRoutes);      
-app.use('/api/members', memberRoutes); 
+app.use('/api/auth', authRoutes);
+app.use('/api/members', memberRoutes);
+app.use('/api/memberships', membershipRoutes);
+app.use('/api/payments', paymentRoutes);
 
 
 app.use((err, _req, res, _next) => {
