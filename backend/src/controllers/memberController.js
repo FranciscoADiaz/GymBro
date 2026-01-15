@@ -48,6 +48,7 @@ const getAllMembers = async (req, res) => {
   try {
     const { status, search } = req.query;
     const gymId = req.user?.gymId;
+    const now = new Date();
 
     const filter = { gym: gymId };
     if (status) {
@@ -59,7 +60,21 @@ const getAllMembers = async (req, res) => {
       filter.$or = nameFilters;
     }
 
+    const [toActiveResult, toInactiveResult] = await Promise.all([
+      Member.updateMany(
+        { gym: gymId, activeUntil: { $gt: now }, status: { $ne: 'active' } },
+        { $set: { status: 'active' } }
+      ),
+      Member.updateMany(
+        { gym: gymId, $or: [{ activeUntil: { $lte: now } }, { activeUntil: null }], status: { $ne: 'inactive' } },
+        { $set: { status: 'inactive' } }
+      ),
+    ]);
+
     const members = await Member.find(filter).sort({ createdAt: -1 });
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/b20702a8-7c6e-40da-affb-9b2d732f56e4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'memberController.js:getAllMembers',message:'members fetched',data:{gymId,memberCount:members.length,filterKeys:Object.keys(filter)},timestamp:Date.now(),sessionId:'debug-session',runId:'trainer-issue',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
 
     return res.status(200).json(members);
   } catch (error) {
@@ -72,9 +87,16 @@ const getMemberById = async (req, res) => {
   try {
     const { id } = req.params;
     const gymId = req.user?.gymId;
+    const now = new Date();
     const member = await Member.findOne({ _id: id, gym: gymId });
     if (!member) {
       return res.status(404).json({ error: 'Socio no encontrado' });
+    }
+    const shouldBeActive = member.activeUntil && member.activeUntil > now;
+    const nextStatus = shouldBeActive ? 'active' : 'inactive';
+    if (member.status !== nextStatus) {
+      await Member.updateOne({ _id: member._id }, { $set: { status: nextStatus } });
+      member.status = nextStatus;
     }
     return res.status(200).json(member);
   } catch (error) {
@@ -105,6 +127,9 @@ const updateMember = async (req, res) => {
       return res.status(404).json({ error: 'Socio no encontrado' });
     }
 
+    // #region agent log
+    fetch('http://127.0.0.1:7245/ingest/b20702a8-7c6e-40da-affb-9b2d732f56e4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'memberController.js:updateMember',message:'member updated',data:{memberId:member._id,status:member.status,activeUntil:member.activeUntil || null,gymId},timestamp:Date.now(),sessionId:'debug-session',runId:'status-pre',hypothesisId:'H3'})}).catch(()=>{});
+    // #endregion
     return res.status(200).json(member);
   } catch (error) {
     if (error.code === 11000) {

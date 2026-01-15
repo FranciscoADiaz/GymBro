@@ -3,7 +3,10 @@ import Swal from 'sweetalert2';
 import toast from 'react-hot-toast';
 import MemberForm from '../components/Members/MemberForm';
 import MemberList from '../components/Members/MemberList';
+import MemberDetails from '../components/Members/MemberDetails';
 import { createMember, deleteMember, getMembers, updateMember } from '../services/memberService';
+import { getMemberships } from '../services/membershipService';
+import { createPayment } from '../services/paymentService';
 import { useAuth } from '../hooks/useAuth';
 
 const MembersPage = () => {
@@ -13,6 +16,7 @@ const MembersPage = () => {
   const [loadingList, setLoadingList] = useState(false);
   const [creating, setCreating] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [error, setError] = useState(null);
   const [formError, setFormError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,10 +51,14 @@ const MembersPage = () => {
         const updated = await updateMember(editingMember._id, data, token);
         setMembers((prev) => prev.map((m) => (m._id === updated._id ? updated : m)));
         setEditingMember(null);
+        if (selectedMember?._id === updated._id) {
+          setSelectedMember(updated);
+        }
         toast.success('Socio actualizado con éxito');
       } else {
         const created = await createMember(data, token);
         setMembers((prev) => [created, ...prev]);
+        setSelectedMember(created);
         toast.success('Socio creado con éxito');
       }
       resetForm();
@@ -103,6 +111,9 @@ const MembersPage = () => {
         setEditingMember(null);
         setFormError(null);
       }
+      if (selectedMember?._id === member._id) {
+        setSelectedMember(null);
+      }
       toast.success('Socio eliminado');
     } catch (err) {
       const msg = err.response?.data?.error || 'No se pudo eliminar el socio';
@@ -111,29 +122,51 @@ const MembersPage = () => {
     }
   };
 
-  const handleToggleStatus = async (member) => {
-    const nextStatus = member.status === 'active' ? 'inactive' : 'active';
-    const actionLabel = nextStatus === 'active' ? 'activar' : 'desactivar';
-    const result = await Swal.fire({
-      title: `¿${actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1)} socio?`,
-      text: `¿Quieres ${actionLabel} a ${member.firstName || ''} ${member.lastName || ''}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: `Sí, ${actionLabel}`,
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: nextStatus === 'active' ? '#16a34a' : '#4b5563',
-    });
-    if (!result.isConfirmed) return;
+  const handleView = (member) => {
+    setSelectedMember(member);
+  };
+
+  const handleRegisterPayment = async (member) => {
     setError(null);
     try {
-      const updated = await updateMember(member._id, { status: nextStatus }, token);
-      setMembers((prev) => prev.map((m) => (m._id === updated._id ? updated : m)));
-      if (editingMember?._id === member._id) {
-        setEditingMember(updated);
+      const memberships = await getMemberships(token);
+      if (!memberships.length) {
+        toast.error('Primero crea una membresía en Mis Planes');
+        return;
       }
+
+      const inputOptions = memberships.reduce((acc, plan) => {
+        acc[plan._id] = `${plan.name} - $${plan.price} (${plan.durationInDays} días)`;
+        return acc;
+      }, {});
+
+      const result = await Swal.fire({
+        title: 'Registrar pago',
+        input: 'select',
+        inputOptions,
+        inputPlaceholder: 'Selecciona una membresía',
+        showCancelButton: true,
+        confirmButtonText: 'Registrar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#4f46e5',
+        inputValidator: (value) => (!value ? 'Selecciona una membresía' : undefined),
+      });
+
+      if (!result.isConfirmed) return;
+
+      const paymentResult = await createPayment(
+        { memberId: member._id, membershipId: result.value },
+        token
+      );
+      const updatedMember = paymentResult.member || member;
+
+      setMembers((prev) => prev.map((m) => (m._id === updatedMember._id ? updatedMember : m)));
+      setSelectedMember(updatedMember);
+      toast.success('Pago registrado con éxito');
     } catch (err) {
-      const msg = err.response?.data?.error || 'No se pudo actualizar el estado';
+      const msg = err.response?.data?.error || 'No se pudo registrar el pago';
       setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -150,7 +183,7 @@ const MembersPage = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <MemberForm
               onSubmit={handleSave}
               onCancel={() => {
@@ -161,6 +194,7 @@ const MembersPage = () => {
               errorMessage={formError}
               editingMember={editingMember}
             />
+            <MemberDetails member={selectedMember} onRegisterPayment={handleRegisterPayment} />
           </div>
           <div className="lg:col-span-2">
             <MemberList
@@ -169,7 +203,7 @@ const MembersPage = () => {
               onSearchChange={setSearchTerm}
               onDelete={handleDelete}
               onEdit={handleEdit}
-              onToggleStatus={handleToggleStatus}
+              onView={handleView}
               loading={loadingList}
             />
           </div>

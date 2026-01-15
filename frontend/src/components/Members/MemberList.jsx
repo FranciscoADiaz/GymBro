@@ -13,7 +13,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const MemberList = ({ members, searchTerm, onSearchChange, onDelete, onEdit, onToggleStatus, loading }) => {
+const MemberList = ({ members, searchTerm, onSearchChange, onDelete, onEdit, onView, loading }) => {
   const filtered = useMemo(() => {
     if (!searchTerm) return members;
     const term = searchTerm.toLowerCase();
@@ -47,22 +47,19 @@ const MemberList = ({ members, searchTerm, onSearchChange, onDelete, onEdit, onT
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">DNI</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-500">
+                <td colSpan={2} className="px-4 py-6 text-center text-sm text-gray-500">
                   Cargando socios...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-500">
+                <td colSpan={2} className="px-4 py-6 text-center text-sm text-gray-500">
                   No hay socios para mostrar.
                 </td>
               </tr>
@@ -72,25 +69,20 @@ const MemberList = ({ members, searchTerm, onSearchChange, onDelete, onEdit, onT
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
                     {member.firstName} {member.lastName}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{member.dni}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{member.email || '—'}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <StatusBadge status={member.status} />
-                  </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-3">
+                    <button
+                      type="button"
+                      onClick={() => onView(member)}
+                      className="text-blue-600 hover:text-blue-700 font-semibold"
+                    >
+                      Detalles
+                    </button>
                     <button
                       type="button"
                       onClick={() => onEdit(member)}
                       className="text-indigo-600 hover:text-indigo-700 font-semibold"
                     >
                       Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onToggleStatus(member)}
-                      className="text-gray-700 hover:text-gray-900 font-semibold"
-                    >
-                      {member.status === 'active' ? 'Desactivar' : 'Activar'}
                     </button>
                     <button
                       type="button"
