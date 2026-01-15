@@ -30,6 +30,9 @@ const Navbar = () => {
                 <NavLink to="/members" className={linkClasses}>
                   Socios
                 </NavLink>
+                <NavLink to="/memberships" className={linkClasses}>
+                  Planes
+                </NavLink>
                 <button
                   type="button"
                   onClick={logout}
@@ -74,6 +77,9 @@ const Navbar = () => {
                 </NavLink>
                 <NavLink to="/members" className={linkClasses} onClick={() => setIsOpen(false)}>
                   Socios
+                </NavLink>
+                <NavLink to="/memberships" className={linkClasses} onClick={() => setIsOpen(false)}>
+                  Planes
                 </NavLink>
                 <button
                   type="button"

@@ -4,6 +4,7 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import Dashboard from '../pages/Dashboard';
 import MembersPage from '../pages/MembersPage';
+import MembershipsPage from '../pages/MembershipsPage';
 import Navbar from '../components/Navbar';
 
 const AppRouter = () => (
@@ -34,6 +35,14 @@ const AppRouter = () => (
         element={
           <ProtectedRoute>
             <MembersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/memberships"
+        element={
+          <ProtectedRoute>
+            <MembershipsPage />
           </ProtectedRoute>
         }
       />

@@ -11,6 +11,7 @@ const RegisterPage = () => {
     email: '',
     password: '',
     gymName: '',
+    gymInviteCode: '',
     role: 'admin',
   });
   const [localError, setLocalError] = useState(null);
@@ -69,11 +70,30 @@ const RegisterPage = () => {
               type="text"
               value={form.gymName}
               onChange={handleChange}
-              required
+              required={form.role !== 'entrenador'}
               placeholder="Nombre del gimnasio"
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </div>
+
+          {form.role === 'entrenador' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="gymInviteCode">
+                Código de gimnasio
+              </label>
+              <input
+                id="gymInviteCode"
+                name="gymInviteCode"
+                type="text"
+                value={form.gymInviteCode}
+                onChange={handleChange}
+                required
+                placeholder="Ej: 1A2B3C4D"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">Solicítalo al administrador del gimnasio.</p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
