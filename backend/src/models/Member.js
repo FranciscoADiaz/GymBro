@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const statusEnum = ['active', 'inactive'];
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const nameRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/;
 
 const memberSchema = new mongoose.Schema(
   {
@@ -10,26 +11,30 @@ const memberSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      match: [nameRegex, 'Solo letras permitidas'],
     },
     lastName: {
       type: String,
       required: true,
       trim: true,
+      match: [nameRegex, 'Solo letras permitidas'],
     },
     dni: {
       type: String,
       required: true,
       trim: true,
+      unique: true,
+      match: [/^\d+$/, 'Solo números permitidos'],
     },
     email: {
       type: String,
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
-      sparse: true,
       validate: {
-        validator: (value) => !value || emailRegex.test(value),
-        message: 'Invalid email format',
+        validator: (value) => emailRegex.test(value),
+        message: 'Formato de email inválido',
       },
     },
     phone: {
@@ -64,7 +69,5 @@ const memberSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-memberSchema.index({ gym: 1, dni: 1 }, { unique: true });
 
 module.exports = mongoose.model('Member', memberSchema);

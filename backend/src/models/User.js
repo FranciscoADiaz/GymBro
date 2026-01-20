@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const roles = ['admin', 'entrenador'];
+const roles = ['admin', 'entrenador', 'user'];
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: roles,
-      default: 'admin',
+      default: 'user',
     },
     gym: {
       type: mongoose.Schema.Types.ObjectId,

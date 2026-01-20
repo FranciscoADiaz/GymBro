@@ -11,13 +11,24 @@ const createMember = async (req, res) => {
     const { firstName, lastName, dni, email, phone, dateOfBirth, profileImage, status, joinDate } = req.body;
     const gymId = req.user?.gymId;
 
-    if (!firstName || !lastName || !dni) {
-      return res.status(400).json({ error: 'firstName, lastName y dni son obligatorios' });
+    if (!firstName || !lastName || !dni || !email) {
+      return res.status(400).json({
+        mensaje: 'Error de validación',
+        errores: [
+          {
+            campo: 'firstName/lastName/dni/email',
+            mensaje: 'firstName, lastName, dni y email son obligatorios',
+          },
+        ],
+      });
     }
 
-    const existingDni = await Member.findOne({ dni, gym: gymId });
-    if (existingDni) {
-      return res.status(400).json({ error: 'El DNI ya existe' });
+    const existingMember = await Member.findOne({ $or: [{ dni }, { email }] });
+    if (existingMember) {
+      return res.status(400).json({
+        mensaje: 'Dato duplicado',
+        errores: [{ campo: 'dni/email', mensaje: 'El DNI o Email ya están registrados' }],
+      });
     }
 
     const member = await Member.create({
@@ -35,9 +46,22 @@ const createMember = async (req, res) => {
 
     return res.status(201).json(member);
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors || {}).map((err) => ({
+        campo: err.path,
+        mensaje: err.message,
+      }));
+      return res.status(400).json({
+        mensaje: 'Error de validación',
+        errores: validationErrors,
+      });
+    }
     if (error.code === 11000) {
       const duplicatedField = Object.keys(error.keyPattern || {})[0];
-      return res.status(400).json({ error: `${duplicatedField} already exists` });
+      return res.status(400).json({
+        mensaje: 'Dato duplicado',
+        errores: [{ campo: duplicatedField, mensaje: `${duplicatedField} ya existe` }],
+      });
     }
     console.error('Create member error:', error);
     return res.status(500).json({ error: 'No se pudo crear el socio' });
