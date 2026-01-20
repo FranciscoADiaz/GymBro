@@ -10,7 +10,8 @@ const initialForm = {
 };
 
 const MembershipsPage = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [memberships, setMemberships] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
@@ -79,77 +80,83 @@ const MembershipsPage = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-lg shadow border border-gray-100 space-y-4 lg:col-span-1"
-          >
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">Nueva membresía</h2>
-              <p className="text-sm text-gray-500">Nombre, precio y duración en días.</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">
-                Nombre
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={form.name}
-                onChange={handleChange}
-                required
-                placeholder="Pase Libre"
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="price">
-                Precio
-              </label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.price}
-                onChange={handleChange}
-                required
-                placeholder="10000"
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="durationInDays">
-                Duración (días)
-              </label>
-              <input
-                id="durationInDays"
-                name="durationInDays"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={form.durationInDays}
-                onChange={handleChange}
-                required
-                placeholder="30"
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full inline-flex justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700 disabled:opacity-60 transition-colors duration-200"
+          {isAdmin && (
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white p-6 rounded-lg shadow border border-gray-100 space-y-4 lg:col-span-1"
             >
-              {saving ? 'Guardando...' : 'Crear membresía'}
-            </button>
-          </form>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">Nueva membresía</h2>
+                <p className="text-sm text-gray-500">Nombre, precio y duración en días.</p>
+              </div>
 
-          <div className="bg-white p-6 rounded-lg shadow border border-gray-100 lg:col-span-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">
+                  Nombre
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Pase Libre"
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="price">
+                  Precio
+                </label>
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.price}
+                  onChange={handleChange}
+                  required
+                  placeholder="10000"
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="durationInDays">
+                  Duración (días)
+                </label>
+                <input
+                  id="durationInDays"
+                  name="durationInDays"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={form.durationInDays}
+                  onChange={handleChange}
+                  required
+                  placeholder="30"
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full inline-flex justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700 disabled:opacity-60 transition-colors duration-200"
+              >
+                {saving ? 'Guardando...' : 'Crear membresía'}
+              </button>
+            </form>
+          )}
+
+          <div
+            className={`bg-white p-6 rounded-lg shadow border border-gray-100 ${
+              isAdmin ? 'lg:col-span-2' : 'lg:col-span-3'
+            }`}
+          >
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">Membresías</h2>
