@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const initialState = {
   firstName: '',
@@ -7,34 +10,48 @@ const initialState = {
   email: '',
 };
 
+const memberSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, 'Debe tener al menos 2 caracteres')
+    .regex(/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/, 'Solo letras permitidas'),
+  lastName: z
+    .string()
+    .min(2, 'Debe tener al menos 2 caracteres')
+    .regex(/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/, 'Solo letras permitidas'),
+  dni: z.string().regex(/^\d{7,8}$/, 'Debe tener entre 7 y 8 dígitos'),
+  email: z.string().email('Email inválido').or(z.literal('')),
+});
+
 const MemberForm = ({ onSubmit, onCancel, submitting, errorMessage, editingMember }) => {
-  const [formData, setFormData] = useState(initialState);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(memberSchema),
+    defaultValues: initialState,
+  });
 
   useEffect(() => {
     if (editingMember) {
-      setFormData({
+      reset({
         firstName: editingMember.firstName || '',
         lastName: editingMember.lastName || '',
         dni: editingMember.dni || '',
         email: editingMember.email || '',
       });
     } else {
-      setFormData(initialState);
+      reset(initialState);
     }
-  }, [editingMember]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData, () => setFormData(initialState));
-  };
+  }, [editingMember, reset]);
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow space-y-4 border border-gray-100">
+    <form
+      onSubmit={handleSubmit((data) => onSubmit(data, () => reset(initialState)))}
+      className="bg-white p-6 rounded-lg shadow space-y-4 border border-gray-100"
+    >
       <div>
         <h2 className="text-lg font-semibold text-gray-800">
           {editingMember ? 'Editar Socio' : 'Nuevo Socio'}
@@ -53,11 +70,10 @@ const MemberForm = ({ onSubmit, onCancel, submitting, errorMessage, editingMembe
             id="firstName"
             name="firstName"
             type="text"
-            required
-            value={formData.firstName}
-            onChange={handleChange}
+            {...register('firstName')}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
+          {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>}
         </div>
 
         <div>
@@ -68,11 +84,10 @@ const MemberForm = ({ onSubmit, onCancel, submitting, errorMessage, editingMembe
             id="lastName"
             name="lastName"
             type="text"
-            required
-            value={formData.lastName}
-            onChange={handleChange}
+            {...register('lastName')}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
+          {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>}
         </div>
 
         <div>
@@ -83,11 +98,10 @@ const MemberForm = ({ onSubmit, onCancel, submitting, errorMessage, editingMembe
             id="dni"
             name="dni"
             type="text"
-            required
-            value={formData.dni}
-            onChange={handleChange}
+            {...register('dni')}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
+          {errors.dni && <p className="mt-1 text-sm text-red-600">{errors.dni.message}</p>}
         </div>
 
         <div>
@@ -98,10 +112,10 @@ const MemberForm = ({ onSubmit, onCancel, submitting, errorMessage, editingMembe
             id="email"
             name="email"
             type="email"
-            value={formData.email}
-            onChange={handleChange}
+            {...register('email')}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
       </div>
 
@@ -118,7 +132,7 @@ const MemberForm = ({ onSubmit, onCancel, submitting, errorMessage, editingMembe
         <button
           type="button"
           onClick={() => {
-            setFormData(initialState);
+            reset(initialState);
             onCancel?.();
           }}
           className="text-sm font-medium text-gray-600 hover:text-gray-800"
