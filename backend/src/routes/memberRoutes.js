@@ -5,11 +5,14 @@ const {
   getMemberById,
   updateMember,
   deleteMember,
+  getMemberStatusByDni
 } = require('../controllers/memberController');
 const { protect } = require('../middlewares/authMiddleware');
 const { validateMemberCreate, validateMemberUpdate } = require('../middlewares/validators/memberValidator');
 
 const router = Router();
+
+router.get('/bot/status/:dni', getMemberStatusByDni);
 
 router.use(protect);
 
