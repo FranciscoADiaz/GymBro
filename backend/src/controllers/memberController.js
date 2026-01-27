@@ -180,11 +180,58 @@ const deleteMember = async (req, res) => {
   }
 };
 
+const getMemberStatusByDni = async (req, res) => {
+  try {
+    const { dni } = req.params;
+
+    const member = await Member.findOne({ dni });
+
+    if (!member) {
+      return res.status(200).json({
+        found: false,
+        message: "No se encontró un socio con ese DNI."
+      });
+    }
+
+    const hoy = new Date();
+    
+    let estaAlDia = false;
+    let fechaFormateada = "Sin fecha registrada";
+
+    if (member.activeUntil) {
+      const vencimiento = new Date(member.activeUntil);
+      
+      estaAlDia = vencimiento >= hoy;
+      
+      fechaFormateada = vencimiento.toLocaleDateString('es-AR');
+    }
+
+    
+    res.status(200).json({
+      found: true,
+      nombre: member.firstName,
+      apellido: member.lastName, 
+      estaAlDia: estaAlDia,     
+      vencimiento: fechaFormateada,
+      mensaje: estaAlDia 
+        ? `✅ ¡Hola ${member.firstName}! Tu cuota está al día hasta el ${fechaFormateada}.` 
+        : `❌ Hola ${member.firstName}. Tu cuota venció el ${fechaFormateada}.`
+    });
+
+  } catch (error) {
+    console.error("Error en getMemberStatusByDni:", error);
+    res.status(500).json({ found: false, error: 'Error del servidor' });
+  }
+};
+
+
+
 module.exports = {
   createMember,
   getAllMembers,
   getMemberById,
   updateMember,
   deleteMember,
+  getMemberStatusByDni
 };
 
