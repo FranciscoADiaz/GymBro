@@ -183,7 +183,7 @@ const getMemberStatusByDni = async (req, res) => {
     if (!member) {
       return res.status(200).json({
         found: false,
-        message: "No se encontró un socio con ese DNI."
+        mensaje: "DNI no encontrado"
       });
     }
 
