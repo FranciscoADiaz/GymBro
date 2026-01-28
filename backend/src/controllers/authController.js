@@ -1,4 +1,3 @@
-/* global fetch */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -120,10 +119,6 @@ const createStaff = async (req, res) => {
       return res.status(409).json({ error: 'El email ya está registrado' });
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/b20702a8-7c6e-40da-affb-9b2d732f56e4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'authController.js:createStaff',message:'creating staff user',data:{gymId,role,email:email.toLowerCase()},timestamp:Date.now(),sessionId:'debug-session',runId:'trainer-fix',hypothesisId:'H3'})}).catch(()=>{});
-    // #endregion
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -132,10 +127,6 @@ const createStaff = async (req, res) => {
       role,
       gym: gymId,
     });
-
-    // #region agent log
-    fetch('http://127.0.0.1:7245/ingest/b20702a8-7c6e-40da-affb-9b2d732f56e4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'authController.js:createStaff',message:'staff user created',data:{userId:user._id,gymId:user.gym,role:user.role},timestamp:Date.now(),sessionId:'debug-session',runId:'trainer-fix',hypothesisId:'H4'})}).catch(()=>{});
-    // #endregion
 
     return res.status(201).json({ user: sanitizeUser(user) });
   } catch (error) {
