@@ -1,6 +1,8 @@
 const Member = require('../models/Member');
 const Membership = require('../models/Membership');
 const Payment = require('../models/Payment');
+const axios = require('axios');
+
 
 const createPayment = async (req, res) => {
   try {
@@ -35,6 +37,24 @@ const createPayment = async (req, res) => {
     member.activeUntil = newActiveUntil;
     member.status = 'active';
     await member.save();
+
+
+
+    try {
+      const n8nUrlPago = process.env.NGROK_URL_PAGO; 
+      
+      axios.post(n8nUrlPago, {
+          firstName: member.firstName,
+          lastName: member.lastName,
+          email: member.email,
+          dni: member.dni,
+          gymId: gymId 
+      }).catch(err => console.error('⚠️ Error enviando webhook a n8n:', err.message));
+      
+  } catch (notificationError) {
+      console.error('Error interno al intentar notificar:', notificationError);
+  }
+
 
     return res.status(201).json({ payment, member });
   } catch (error) {
