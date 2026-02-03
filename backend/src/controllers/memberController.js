@@ -1,4 +1,5 @@
 const Member = require('../models/Member');
+const axios = require('axios');
 
 const buildNameRegexFilter = (search) => {
   if (!search) return null;
@@ -43,6 +44,24 @@ const createMember = async (req, res) => {
       joinDate,
       gym: gymId,
     });
+
+
+    try {
+      const n8nUrl = process.env.NGROK_URL_BIENVENIDA; 
+      
+      axios.post(n8nUrl, {
+          firstName: member.firstName,
+          lastName: member.lastName,
+          email: member.email,
+          dni: member.dni,
+          gymId: gymId 
+      }).catch(err => console.error('⚠️ Error enviando webhook a n8n:', err.message));
+      
+  } catch (notificationError) {
+      console.error('Error interno al intentar notificar:', notificationError);
+  }
+
+
 
     return res.status(201).json(member);
   } catch (error) {
