@@ -6,9 +6,11 @@ const linkClasses = ({ isActive }) =>
   `text-sm font-semibold transition ${isActive ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`;
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const isAdmin = user?.role === 'admin';
+  const canAccessControl = ['recepcion', 'entrenador', 'admin'].includes(user?.role);
 
   if (pathname === '/login' || pathname === '/register') {
     return null;
@@ -33,6 +35,16 @@ const Navbar = () => {
                 <NavLink to="/memberships" className={linkClasses}>
                   Planes
                 </NavLink>
+                {isAdmin && (
+                  <NavLink to="/classes" className={linkClasses}>
+                    Clases
+                  </NavLink>
+                )}
+                {canAccessControl && (
+                  <NavLink to="/access-control" className={linkClasses}>
+                    Acceso
+                  </NavLink>
+                )}
                 <button
                   type="button"
                   onClick={logout}
@@ -81,6 +93,16 @@ const Navbar = () => {
                 <NavLink to="/memberships" className={linkClasses} onClick={() => setIsOpen(false)}>
                   Planes
                 </NavLink>
+                {isAdmin && (
+                  <NavLink to="/classes" className={linkClasses} onClick={() => setIsOpen(false)}>
+                    Clases
+                  </NavLink>
+                )}
+                {canAccessControl && (
+                  <NavLink to="/access-control" className={linkClasses} onClick={() => setIsOpen(false)}>
+                    Acceso
+                  </NavLink>
+                )}
                 <button
                   type="button"
                   onClick={() => {
