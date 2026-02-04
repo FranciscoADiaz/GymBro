@@ -5,6 +5,8 @@ import RegisterPage from '../pages/RegisterPage';
 import Dashboard from '../pages/Dashboard';
 import MembersPage from '../pages/MembersPage';
 import MembershipsPage from '../pages/MembershipsPage';
+import ClassesPage from '../pages/ClassesPage';
+import AccessControlPage from '../pages/AccessControlPage';
 import Navbar from '../components/Navbar';
 
 const AppRouter = () => (
@@ -43,6 +45,22 @@ const AppRouter = () => (
         element={
           <ProtectedRoute>
             <MembershipsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/classes"
+        element={
+          <ProtectedRoute>
+            <ClassesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/access-control"
+        element={
+          <ProtectedRoute>
+            <AccessControlPage />
           </ProtectedRoute>
         }
       />
