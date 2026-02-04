@@ -11,6 +11,8 @@ const memberRoutes = require('./src/routes/memberRoutes');
 const membershipRoutes = require('./src/routes/membershipRoutes');
 const paymentRoutes = require('./src/routes/paymentRoutes');
 const gymRoutes = require('./src/routes/gymRoutes');
+const classRoutes = require('./src/routes/classRoutes');
+const attendanceRoutes = require('./src/routes/attendanceRoutes');
 
 const validateEnv = () => {
   const required = ['MONGODB_URI', 'JWT_SECRET', 'FRONTEND_URL'];
@@ -81,6 +83,8 @@ app.use('/api/members', memberRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/gyms', gymRoutes);
+app.use('/api/classes', classRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 app.use((req, res, next) => {
   if (req.path && req.path.startsWith('/api')) {
